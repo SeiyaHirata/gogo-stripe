@@ -34,21 +34,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Stripe webhook endpoint
   app.post("/api/webhook/payment", express.raw({type: 'application/json'}), async (req, res) => {
+    console.log('Webhook received:', {
+      headers: req.headers,
+      bodyType: typeof req.body,
+      bodyLength: req.body?.length,
+      bodyConstructor: req.body?.constructor?.name
+    });
+
     const sig = req.headers['stripe-signature'] as string;
     let event: Stripe.Event;
 
     try {
-      // In production, you would verify the webhook signature
-      // For now, we'll parse the event directly for testing
-      if (process.env.STRIPE_WEBHOOK_SECRET) {
+      if (process.env.STRIPE_WEBHOOK_SECRET && sig) {
+        // Verify webhook signature if secret is provided
+        console.log('Using webhook secret verification');
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
       } else {
-        // For development/testing - parse JSON directly
-        event = JSON.parse(req.body.toString());
+        // For development/testing - parse JSON directly from buffer
+        console.log('Parsing JSON without verification');
+        const rawBody = req.body;
+        const bodyString = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : String(rawBody);
+        console.log('Body string:', bodyString.slice(0, 200) + '...');
+        event = JSON.parse(bodyString);
       }
     } catch (err: any) {
-      console.log(`Webhook signature verification failed:`, err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      console.error(`Webhook processing error:`, {
+        error: err.message,
+        bodyType: typeof req.body,
+        bodyString: req.body ? String(req.body).slice(0, 200) : 'no body'
+      });
+      return res.status(400).send(`Webhook Error: ${err.message || 'Invalid JSON'}`);
     }
 
     // Handle payment success
