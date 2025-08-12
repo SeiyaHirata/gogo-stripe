@@ -205,13 +205,11 @@ export function GoGoLamp() {
                   animate={
                     isActive
                       ? {
-                          filter: "brightness(1.5) saturate(1.2)",
                           boxShadow:
-                            "0 0 40px #00ff41, 0 0 80px #00ff41, 0 0 120px #00ff41",
+                            "0 0 60px rgba(255, 255, 0, 0.8), 0 0 120px rgba(255, 255, 0, 0.6), 0 0 180px rgba(255, 255, 0, 0.4)",
                           scale: lampState === "activating" ? [1, 1.1, 1] : 1,
                         }
                       : {
-                          filter: "brightness(0.7) saturate(0.8) grayscale(0.3)",
                           boxShadow: "none",
                           scale: 1,
                         }
@@ -235,20 +233,19 @@ export function GoGoLamp() {
                   <AnimatePresence>
                     {isActive && (
                       <motion.img
-                        src="/images/lamp-off.png"
+                        src="/images/lamp-on.png"
                         alt="Lamp On"
                         className="w-48 h-48 object-contain absolute inset-0"
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ 
-                          opacity: [0, 1, 0.8, 1],
-                          scale: [1, 1.05, 1],
-                          filter: ["brightness(1)", "brightness(1.8)", "brightness(1.4)", "brightness(1.6)"]
+                          opacity: [0, 1, 0.9, 1],
+                          scale: [0.9, 1.05, 1, 1.02],
                         }}
-                        exit={{ opacity: 0 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ 
-                          duration: 1,
+                          duration: 0.8,
                           repeat: Infinity,
-                          repeatDelay: 2,
+                          repeatDelay: 1.5,
                           ease: "easeInOut"
                         }}
                       />
