@@ -15,6 +15,11 @@ Preferred communication style: Simple, everyday language.
 - Added payment history tracking and display
 - Configured proper error handling and debugging for webhook processing
 - Set up all required Stripe API keys and webhook secret for production use
+- Replaced CSS animations with custom GOGO! Stripe images (off/on states)
+- Added audio notification system with "キュいん" sound effect
+- Optimized for larger image display (384px) and removed auto-repeat animations
+- Created comprehensive README.md and documentation for open source release
+- Added .env.example and MIT License for public distribution
 
 # System Architecture
 
