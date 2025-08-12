@@ -199,77 +199,61 @@ export function GoGoLamp() {
               {/* Lamp Pole */}
               <div className="mx-auto w-4 h-24 bg-gradient-to-b from-gray-500 to-gray-600 rounded-sm shadow-lg" />
 
-              {/* Lamp Bulb Container */}
+              {/* Lamp Image Container */}
               <div className="relative mx-auto -mt-2">
                 <motion.div
                   animate={
                     isActive
                       ? {
-                          background:
-                            "linear-gradient(135deg, #00ff41, #22c55e)",
-                          borderColor: "#00ff41",
+                          filter: "brightness(1.5) saturate(1.2)",
                           boxShadow:
                             "0 0 40px #00ff41, 0 0 80px #00ff41, 0 0 120px #00ff41",
                           scale: lampState === "activating" ? [1, 1.1, 1] : 1,
                         }
                       : {
-                          background:
-                            "linear-gradient(135deg, #1f2937, #111827)",
-                          borderColor: "#4b5563",
+                          filter: "brightness(0.7) saturate(0.8) grayscale(0.3)",
                           boxShadow: "none",
                           scale: 1,
                         }
                   }
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="w-48 h-48 rounded-full border-4 shadow-2xl flex items-center justify-center relative"
+                  className="w-48 h-48 flex items-center justify-center relative"
                 >
-                  {/* Inner Glow */}
-                  <motion.div
-                    animate={
-                      isActive
-                        ? {
-                            background: "#ffffff",
-                            opacity: 0.8,
-                            scale: [1, 1.2, 1],
-                          }
-                        : {
-                            background: "#374151",
-                            opacity: 0.3,
-                            scale: 1,
-                          }
-                    }
-                    transition={{
-                      duration: 2,
-                      repeat: isActive ? Infinity : 0,
-                      ease: "easeInOut",
-                    }}
-                    className="w-32 h-32 rounded-full"
-                  />
-
-                  {/* Center Symbol */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      animate={
-                        isActive
-                          ? {
-                              color: "#0f0f23",
-                              y: [-5, 5, -5],
-                            }
-                          : {
-                              color: "#6b7280",
-                              y: 0,
-                            }
-                      }
-                      transition={{
-                        duration: 3,
-                        repeat: isActive ? Infinity : 0,
-                        ease: "easeInOut",
-                      }}
-                      className="font-orbitron font-black text-6xl"
-                    >
-                      {isActive ? "💰" : "¥"}
-                    </motion.div>
-                  </div>
+                  {/* Lamp Image - Off State */}
+                  {!isActive && (
+                    <motion.img
+                      src="/images/lamp-off.png"
+                      alt="Lamp Off"
+                      className="w-48 h-48 object-contain"
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  
+                  {/* Lamp Image - On State */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.img
+                        src="/images/lamp-off.png"
+                        alt="Lamp On"
+                        className="w-48 h-48 object-contain absolute inset-0"
+                        initial={{ opacity: 0 }}
+                        animate={{ 
+                          opacity: [0, 1, 0.8, 1],
+                          scale: [1, 1.05, 1],
+                          filter: ["brightness(1)", "brightness(1.8)", "brightness(1.4)", "brightness(1.6)"]
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ 
+                          duration: 1,
+                          repeat: Infinity,
+                          repeatDelay: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
                 </motion.div>
 
                 {/* Lamp Shade */}
