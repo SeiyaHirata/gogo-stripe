@@ -245,14 +245,12 @@ export function GoGoLamp() {
                         className="w-64 h-64 object-contain absolute inset-0"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ 
-                          opacity: [0, 1, 0.85, 1],
-                          scale: [0.95, 1.02, 1, 1.01],
+                          opacity: 1,
+                          scale: 1,
                         }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ 
-                          duration: 1.2,
-                          repeat: Infinity,
-                          repeatDelay: 2,
+                          duration: 0.5,
                           ease: "easeInOut"
                         }}
                       />
