@@ -1,188 +1,188 @@
-# GoGoLamp - Real-time Stripe Payment Notification System
+# GoGoLamp - リアルタイム Stripe 決済通知システム
 
 [🇯🇵 日本語版 README](README.ja.md) | [🇬🇧 English README](README.md)
 
-A real-time payment visualization system that lights up when Stripe webhooks are received. Features visual and audio notifications with a modern, animated interface.
+Stripe ウェブフック受信時に光るリアルタイム決済可視化システムです。視覚的・音声通知機能とモダンなアニメーションインターフェースを提供します。
 
-## Features
+## 機能
 
-- 🔴 Real-time payment notifications via Stripe webhooks
-- 🎵 Audio alerts on payment receipt
-- 💡 Visual lamp animation with custom images
-- 📊 Payment history tracking
-- 🌐 Socket.IO for instant communication
-- 🎨 Modern UI with Framer Motion animations
-- 💳 Secure webhook signature verification
+- 🔴 Stripe ウェブフック経由でのリアルタイム決済通知
+- 🎵 決済受信時の音声アラート
+- 💡 カスタム画像を使用したランプアニメーション
+- 📊 決済履歴追跡
+- 🌐 Socket.IO による瞬時通信
+- 🎨 Framer Motion アニメーション搭載のモダンUI
+- 💳 安全なウェブフック署名検証
 
-## Tech Stack
+## 技術スタック
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **Backend**: Express.js + Socket.IO
-- **Storage**: In-memory storage (easily extensible to PostgreSQL)
-- **UI**: Tailwind CSS + shadcn/ui components
-- **Animations**: Framer Motion
-- **Payment Processing**: Stripe webhooks
+- **フロントエンド**: React 18 + TypeScript + Vite
+- **バックエンド**: Express.js + Socket.IO
+- **ストレージ**: インメモリストレージ（PostgreSQLに簡単拡張可能）
+- **UI**: Tailwind CSS + shadcn/ui コンポーネント
+- **アニメーション**: Framer Motion
+- **決済処理**: Stripe ウェブフック
 
-## Prerequisites
+## 前提条件
 
-- Node.js 18+ and npm
-- Stripe account with webhook endpoint configured
+- Node.js 18+ と npm
+- ウェブフックエンドポイントが設定された Stripe アカウント
 
-## Environment Variables
+## 環境変数
 
-Create a `.env` file in the root directory with the following variables:
+ルートディレクトリに `.env` ファイルを作成し、以下の変数を設定してください：
 
 ```env
-# Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_...                    # Your Stripe secret key
-STRIPE_WEBHOOK_SECRET=whsec_...                  # Webhook endpoint secret
-VITE_STRIPE_PUBLIC_KEY=pk_test_...               # Your Stripe publishable key
+# Stripe 設定
+STRIPE_SECRET_KEY=sk_test_...                    # Stripe シークレットキー
+STRIPE_WEBHOOK_SECRET=whsec_...                  # ウェブフックエンドポイントシークレット
+VITE_STRIPE_PUBLIC_KEY=pk_test_...               # Stripe 公開可能キー
 
-# Development
+# 開発環境
 NODE_ENV=development
 ```
 
-### Getting Stripe API Keys
+### Stripe API キーの取得方法
 
-1. Go to [Stripe Dashboard API Keys](https://dashboard.stripe.com/apikeys)
-2. Copy your **Publishable key** (starts with `pk_`) for `VITE_STRIPE_PUBLIC_KEY`
-3. Copy your **Secret key** (starts with `sk_`) for `STRIPE_SECRET_KEY`
-4. For webhooks:
-   - Go to [Stripe Webhooks](https://dashboard.stripe.com/webhooks)
-   - Create a new webhook endpoint pointing to `https://your-domain.com/api/webhook`
-   - Select events: `payment_intent.succeeded`
-   - Copy the **Signing secret** (starts with `whsec_`) for `STRIPE_WEBHOOK_SECRET`
+1. [Stripe ダッシュボード API キー](https://dashboard.stripe.com/apikeys) にアクセス
+2. **公開可能キー**（`pk_` で始まる）を `VITE_STRIPE_PUBLIC_KEY` にコピー
+3. **シークレットキー**（`sk_` で始まる）を `STRIPE_SECRET_KEY` にコピー
+4. ウェブフック設定：
+   - [Stripe ウェブフック](https://dashboard.stripe.com/webhooks) にアクセス
+   - `https://your-domain.com/api/webhook` を指す新しいウェブフックエンドポイントを作成
+   - イベント選択: `payment_intent.succeeded`
+   - **署名シークレット**（`whsec_` で始まる）を `STRIPE_WEBHOOK_SECRET` にコピー
 
-## Installation
+## インストール
 
-1. **Clone the repository**
+1. **リポジトリをクローン**
    ```bash
    git clone https://github.com/yourusername/gogolamp.git
    cd gogolamp
    ```
 
-2. **Install dependencies**
+2. **依存関係をインストール**
    ```bash
    npm install
    ```
 
-3. **Set up environment variables**
+3. **環境変数を設定**
    ```bash
    cp .env.example .env
-   # Edit .env with your configuration
+   # .env ファイルを設定内容で編集
    ```
 
-4. **Start the development server**
+4. **開発サーバーを起動**
    ```bash
    npm run dev
    ```
 
-The application will be available at `http://localhost:5000`
+アプリケーションは `http://localhost:5000` で利用できます
 
-## Deployment
+## デプロイ
 
-### Replit Deployment (Recommended)
+### Replit デプロイ（推奨）
 
-1. Import this repository to Replit
-2. Set environment variables in the Secrets tab
-3. Click "Deploy" to create a production deployment
-4. Use the deployment URL as your Stripe webhook endpoint
+1. このリポジトリを Replit にインポート
+2. Secrets タブで環境変数を設定
+3. 「Deploy」をクリックして本番デプロイを作成
+4. デプロイ URL を Stripe ウェブフックエンドポイントとして使用
 
-### Manual Deployment
+### 手動デプロイ
 
-1. Build the application:
+1. アプリケーションをビルド：
    ```bash
    npm run build
    ```
 
-2. Set up your production environment variables
+2. 本番環境変数を設定
 
-3. Start the production server:
+3. 本番サーバーを起動：
    ```bash
    npm start
    ```
 
-## Configuration
+## カスタマイズ
 
-### Custom Images
+### カスタム画像
 
-Replace the default lamp images in `client/public/images/`:
-- `lamp-off.png` - Image shown when no payment is detected
-- `lamp-on.png` - Image shown when payment is received
+`client/public/images/` にある標準ランプ画像を置き換え：
+- `lamp-off.png` - 決済未検出時に表示される画像
+- `lamp-on.png` - 決済受信時に表示される画像
 
-### Audio
+### 音声
 
-Replace the payment sound in `client/public/sounds/`:
-- `payment-sound.m4a` - Sound played when payment is received
+`client/public/sounds/` にある決済音を置き換え：
+- `payment-sound.m4a` - 決済受信時に再生される音
 
-### Webhook Events
+### ウェブフックイベント
 
-The system listens for these Stripe events:
-- `payment_intent.succeeded` - Triggers the lamp activation
+システムは以下の Stripe イベントをリッスンします：
+- `payment_intent.succeeded` - ランプ点灯をトリガー
 
-## API Endpoints
+## API エンドポイント
 
-- `GET /api/payments` - Fetch payment history
-- `POST /api/webhook` - Stripe webhook endpoint (configured in Stripe dashboard)
-- `POST /api/test-payment` - Test endpoint for development
+- `GET /api/payments` - 決済履歴を取得
+- `POST /api/webhook` - Stripe ウェブフックエンドポイント（Stripe ダッシュボードで設定）
+- `POST /api/test-payment` - 開発用テストエンドポイント
 
-## Development Scripts
+## 開発コマンド
 
 ```bash
-# Start development server
+# 開発サーバーを起動
 npm run dev
 
-# Build for production
+# 本番用にビルド
 npm run build
 
-# Start production server
+# 本番サーバーを起動
 npm start
 
-# Type checking
+# 型チェック
 npm run check
 ```
 
-## Project Structure
+## プロジェクト構造
 
 ```
-├── client/                 # React frontend
-│   ├── public/            # Static assets (images, sounds)
+├── client/                 # React フロントエンド
+│   ├── public/            # 静的アセット（画像、音声）
 │   └── src/
-│       ├── components/    # React components
-│       ├── pages/         # Application pages
-│       └── lib/           # Utilities and configurations
-├── server/                # Express backend
-│   ├── index.ts          # Server entry point
-│   ├── routes.ts         # API routes
-│   └── storage.ts        # Database interface
-├── shared/                # Shared types and schemas
-└── README.md
+│       ├── components/    # React コンポーネント
+│       ├── pages/         # アプリケーションページ
+│       └── lib/           # ユーティリティと設定
+├── server/                # Express バックエンド
+│   ├── index.ts          # サーバーエントリーポイント
+│   ├── routes.ts         # API ルート
+│   └── storage.ts        # データベースインターフェース
+├── shared/                # 共有型とスキーマ
+└── README.ja.md
 ```
 
-## Contributing
+## 貢献
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -m 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
+1. リポジトリをフォーク
+2. 機能ブランチを作成: `git checkout -b feature-name`
+3. 変更をコミット: `git commit -m 'Add feature'`
+4. ブランチにプッシュ: `git push origin feature-name`
+5. プルリクエストを送信
 
-For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
+詳細については [CONTRIBUTING.ja.md](CONTRIBUTING.ja.md) をご覧ください。
 
-## License
+## ライセンス
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+このプロジェクトは MIT ライセンスの下でライセンスされています - 詳細は [LICENSE](LICENSE) ファイルをご覧ください。
 
-## Support
+## サポート
 
-If you encounter any issues or have questions:
-1. Check the [Issues](https://github.com/yourusername/gogolamp/issues) page
-2. Create a new issue with detailed information about your problem
-3. Include your environment details and error messages
+問題が発生した場合や質問がある場合：
+1. [Issues](https://github.com/yourusername/gogolamp/issues) ページを確認
+2. 問題に関する詳細情報を含む新しい Issue を作成
+3. 環境詳細とエラーメッセージを含める
 
-## Acknowledgments
+## 謝辞
 
-- [Stripe](https://stripe.com) for payment processing
-- [Socket.IO](https://socket.io) for real-time communication
-- [Framer Motion](https://www.framer.com/motion/) for animations
-- [shadcn/ui](https://ui.shadcn.com) for UI components
+- [Stripe](https://stripe.com) 決済処理
+- [Socket.IO](https://socket.io) リアルタイム通信
+- [Framer Motion](https://www.framer.com/motion/) アニメーション
+- [shadcn/ui](https://ui.shadcn.com) UI コンポーネント
