@@ -186,27 +186,21 @@ export function GoGoLamp() {
                   animate={{ opacity: 0.3, scale: 1.5 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.5 }}
-                  className="absolute inset-0 rounded-full bg-neon-green blur-3xl"
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 blur-3xl"
                 />
               )}
             </AnimatePresence>
 
-            {/* Main Lamp */}
+            {/* Main GOGO Lamp */}
             <div className="relative">
-              {/* Lamp Base */}
-              <div className="mx-auto w-32 h-8 bg-gradient-to-r from-gray-600 to-gray-500 rounded-full shadow-lg" />
-
-              {/* Lamp Pole */}
-              <div className="mx-auto w-4 h-24 bg-gradient-to-b from-gray-500 to-gray-600 rounded-sm shadow-lg" />
-
-              {/* Lamp Image Container */}
+              {/* GOGO Lamp Image Container */}
               <div className="relative mx-auto -mt-2">
                 <motion.div
                   animate={
                     isActive
                       ? {
                           boxShadow:
-                            "0 0 60px rgba(255, 255, 0, 0.8), 0 0 120px rgba(255, 255, 0, 0.6), 0 0 180px rgba(255, 255, 0, 0.4)",
+                            "0 0 80px rgba(255, 20, 147, 0.8), 0 0 160px rgba(0, 191, 255, 0.6), 0 0 240px rgba(255, 20, 147, 0.4)",
                           scale: lampState === "activating" ? [1, 1.1, 1] : 1,
                         }
                       : {
@@ -215,14 +209,14 @@ export function GoGoLamp() {
                         }
                   }
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="w-48 h-48 flex items-center justify-center relative"
+                  className="w-64 h-64 flex items-center justify-center relative"
                 >
                   {/* Lamp Image - Off State */}
                   {!isActive && (
                     <motion.img
                       src="/images/lamp-off.png"
-                      alt="Lamp Off"
-                      className="w-48 h-48 object-contain"
+                      alt="GOGO! Stripe - Off"
+                      className="w-64 h-64 object-contain"
                       initial={{ opacity: 1 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -234,18 +228,18 @@ export function GoGoLamp() {
                     {isActive && (
                       <motion.img
                         src="/images/lamp-on.png"
-                        alt="Lamp On"
-                        className="w-48 h-48 object-contain absolute inset-0"
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        alt="GOGO! Stripe - On"
+                        className="w-64 h-64 object-contain absolute inset-0"
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ 
-                          opacity: [0, 1, 0.9, 1],
-                          scale: [0.9, 1.05, 1, 1.02],
+                          opacity: [0, 1, 0.85, 1],
+                          scale: [0.95, 1.02, 1, 1.01],
                         }}
-                        exit={{ opacity: 0, scale: 0.9 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ 
-                          duration: 0.8,
+                          duration: 1.2,
                           repeat: Infinity,
-                          repeatDelay: 1.5,
+                          repeatDelay: 2,
                           ease: "easeInOut"
                         }}
                       />
