@@ -79,11 +79,24 @@ export function GoGoLamp() {
     }
   };
 
+  const playPaymentSound = () => {
+    try {
+      const audio = new Audio('/sounds/payment-sound.m4a');
+      audio.volume = 0.7; // Set volume to 70%
+      audio.play().catch(console.error);
+    } catch (error) {
+      console.error('Failed to play payment sound:', error);
+    }
+  };
+
   const activateLamp = (amount: number) => {
     if (lampState === "activating" || lampState === "active") return;
 
     setLampState("activating");
     setCurrentAmount(amount);
+    
+    // Play payment sound
+    playPaymentSound();
 
     setTimeout(() => {
       setLampState("active");
