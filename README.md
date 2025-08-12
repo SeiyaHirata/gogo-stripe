@@ -1,5 +1,7 @@
 # GoGoLamp - Real-time Stripe Payment Notification System
 
+[🇯🇵 日本語版 README](README.ja.md) | [🇬🇧 English README](README.md)
+
 A real-time payment visualization system that lights up when Stripe webhooks are received. Features visual and audio notifications with a modern, animated interface.
 
 ## Features
@@ -164,6 +166,8 @@ npm run check
 3. Commit your changes: `git commit -m 'Add feature'`
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request
+
+For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
