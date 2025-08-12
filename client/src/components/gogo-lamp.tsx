@@ -17,32 +17,36 @@ interface PaymentHistoryItem {
 }
 
 export function GoGoLamp() {
-  const [lampState, setLampState] = useState<'idle' | 'activating' | 'active' | 'cooling'>('idle');
+  const [lampState, setLampState] = useState<
+    "idle" | "activating" | "active" | "cooling"
+  >("idle");
   const [currentAmount, setCurrentAmount] = useState<number>(0);
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>([]);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>(
+    [],
+  );
   const [isConnected, setIsConnected] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<string>('--:--:--');
+  const [lastUpdate, setLastUpdate] = useState<string>("--:--:--");
 
   useEffect(() => {
     // Connect to Socket.IO
     const socket = io();
 
-    socket.on('connect', () => {
+    socket.on("connect", () => {
       setIsConnected(true);
-      console.log('Connected to server');
+      console.log("Connected to server");
     });
 
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       setIsConnected(false);
-      console.log('Disconnected from server');
+      console.log("Disconnected from server");
     });
 
-    socket.on('payment_received', (data: PaymentData) => {
+    socket.on("payment_received", (data: PaymentData) => {
       activateLamp(data.amount);
       addPaymentToHistory({
         amount: data.amount,
         timestamp: new Date(data.timestamp).toLocaleTimeString(),
-        id: data.paymentId
+        id: data.paymentId,
       });
     });
 
@@ -62,28 +66,28 @@ export function GoGoLamp() {
 
   const fetchPaymentHistory = async () => {
     try {
-      const response = await fetch('/api/payments');
+      const response = await fetch("/api/payments");
       const payments = await response.json();
       const history = payments.map((p: any) => ({
-        amount: p.amount / 100,
+        amount: p.amount,
         timestamp: new Date(p.timestamp).toLocaleTimeString(),
-        id: p.id
+        id: p.id,
       }));
       setPaymentHistory(history);
     } catch (error) {
-      console.error('Error fetching payment history:', error);
+      console.error("Error fetching payment history:", error);
     }
   };
 
   const activateLamp = (amount: number) => {
-    if (lampState === 'activating' || lampState === 'active') return;
-    
-    setLampState('activating');
+    if (lampState === "activating" || lampState === "active") return;
+
+    setLampState("activating");
     setCurrentAmount(amount);
-    
+
     setTimeout(() => {
-      setLampState('active');
-      
+      setLampState("active");
+
       // Auto-reset after 5 seconds
       setTimeout(() => {
         resetLamp();
@@ -92,44 +96,45 @@ export function GoGoLamp() {
   };
 
   const resetLamp = () => {
-    setLampState('cooling');
-    
+    setLampState("cooling");
+
     setTimeout(() => {
-      setLampState('idle');
+      setLampState("idle");
       setCurrentAmount(0);
     }, 500);
   };
 
   const addPaymentToHistory = (payment: PaymentHistoryItem) => {
-    setPaymentHistory(prev => [payment, ...prev.slice(0, 4)]);
+    setPaymentHistory((prev) => [payment, ...prev.slice(0, 4)]);
   };
 
   const testPayment = async () => {
     const amounts = [10, 25, 50, 100, 250];
     const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
-    
+
     try {
-      await fetch('/api/test-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: randomAmount })
+      await fetch("/api/test-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: randomAmount }),
       });
     } catch (error) {
-      console.error('Error testing payment:', error);
+      console.error("Error testing payment:", error);
     }
   };
 
-  const isActive = lampState === 'active' || lampState === 'activating';
+  const isActive = lampState === "active" || lampState === "activating";
 
   return (
     <div className="min-h-screen bg-dark-bg text-white font-inter overflow-hidden relative">
       {/* Background Pattern */}
       <div className="fixed inset-0 opacity-5">
-        <div 
-          className="absolute inset-0" 
+        <div
+          className="absolute inset-0"
           style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, #00ff41 1px, transparent 0)',
-            backgroundSize: '40px 40px'
+            backgroundImage:
+              "radial-gradient(circle at 2px 2px, #00ff41 1px, transparent 0)",
+            backgroundSize: "40px 40px",
           }}
         />
       </div>
@@ -139,20 +144,26 @@ export function GoGoLamp() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-neon-green rounded-lg flex items-center justify-center">
-              <span className="text-dark-bg font-orbitron font-bold text-lg">G</span>
+              <span className="text-dark-bg font-orbitron font-bold text-lg">
+                G
+              </span>
             </div>
             <div>
-              <h1 className="font-orbitron font-bold text-xl text-neon-green">GoGo Lamp</h1>
+              <h1 className="font-orbitron font-bold text-xl text-neon-green">
+                GoGo Lamp
+              </h1>
               <p className="text-gray-400 text-sm">Stripe Payment Detector</p>
             </div>
           </div>
-          
+
           {/* Status Indicators */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-neon-green animate-pulse' : 'bg-red-500'}`} />
+              <div
+                className={`w-3 h-3 rounded-full ${isConnected ? "bg-neon-green animate-pulse" : "bg-red-500"}`}
+              />
               <span className="text-sm text-gray-300">
-                {isConnected ? 'Connected' : 'Disconnected'}
+                {isConnected ? "Connected" : "Disconnected"}
               </span>
             </div>
             <div className="text-sm text-gray-400">
@@ -165,7 +176,6 @@ export function GoGoLamp() {
       {/* Main Lamp Display */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-6 py-12">
         <div className="max-w-4xl mx-auto text-center">
-          
           {/* Main Lamp Container */}
           <div className="relative mb-12">
             {/* Lamp Glow Background */}
@@ -180,74 +190,93 @@ export function GoGoLamp() {
                 />
               )}
             </AnimatePresence>
-            
+
             {/* Main Lamp */}
             <div className="relative">
               {/* Lamp Base */}
               <div className="mx-auto w-32 h-8 bg-gradient-to-r from-gray-600 to-gray-500 rounded-full shadow-lg" />
-              
+
               {/* Lamp Pole */}
               <div className="mx-auto w-4 h-24 bg-gradient-to-b from-gray-500 to-gray-600 rounded-sm shadow-lg" />
-              
+
               {/* Lamp Bulb Container */}
               <div className="relative mx-auto -mt-2">
                 <motion.div
-                  animate={isActive ? {
-                    background: 'linear-gradient(135deg, #00ff41, #22c55e)',
-                    borderColor: '#00ff41',
-                    boxShadow: '0 0 40px #00ff41, 0 0 80px #00ff41, 0 0 120px #00ff41',
-                    scale: lampState === 'activating' ? [1, 1.1, 1] : 1
-                  } : {
-                    background: 'linear-gradient(135deg, #1f2937, #111827)',
-                    borderColor: '#4b5563',
-                    boxShadow: 'none',
-                    scale: 1
-                  }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  animate={
+                    isActive
+                      ? {
+                          background:
+                            "linear-gradient(135deg, #00ff41, #22c55e)",
+                          borderColor: "#00ff41",
+                          boxShadow:
+                            "0 0 40px #00ff41, 0 0 80px #00ff41, 0 0 120px #00ff41",
+                          scale: lampState === "activating" ? [1, 1.1, 1] : 1,
+                        }
+                      : {
+                          background:
+                            "linear-gradient(135deg, #1f2937, #111827)",
+                          borderColor: "#4b5563",
+                          boxShadow: "none",
+                          scale: 1,
+                        }
+                  }
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                   className="w-48 h-48 rounded-full border-4 shadow-2xl flex items-center justify-center relative"
                 >
                   {/* Inner Glow */}
                   <motion.div
-                    animate={isActive ? {
-                      background: '#ffffff',
-                      opacity: 0.8,
-                      scale: [1, 1.2, 1]
-                    } : {
-                      background: '#374151',
-                      opacity: 0.3,
-                      scale: 1
+                    animate={
+                      isActive
+                        ? {
+                            background: "#ffffff",
+                            opacity: 0.8,
+                            scale: [1, 1.2, 1],
+                          }
+                        : {
+                            background: "#374151",
+                            opacity: 0.3,
+                            scale: 1,
+                          }
+                    }
+                    transition={{
+                      duration: 2,
+                      repeat: isActive ? Infinity : 0,
+                      ease: "easeInOut",
                     }}
-                    transition={{ duration: 2, repeat: isActive ? Infinity : 0, ease: 'easeInOut' }}
                     className="w-32 h-32 rounded-full"
                   />
-                  
+
                   {/* Center Symbol */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div
-                      animate={isActive ? {
-                        color: '#0f0f23',
-                        y: [-5, 5, -5]
-                      } : {
-                        color: '#6b7280',
-                        y: 0
-                      }}
-                      transition={{ 
-                        duration: 3, 
-                        repeat: isActive ? Infinity : 0, 
-                        ease: 'easeInOut' 
+                      animate={
+                        isActive
+                          ? {
+                              color: "#0f0f23",
+                              y: [-5, 5, -5],
+                            }
+                          : {
+                              color: "#6b7280",
+                              y: 0,
+                            }
+                      }
+                      transition={{
+                        duration: 3,
+                        repeat: isActive ? Infinity : 0,
+                        ease: "easeInOut",
                       }}
                       className="font-orbitron font-black text-6xl"
                     >
-                      {isActive ? '💰' : '¥'}
+                      {isActive ? "💰" : "¥"}
                     </motion.div>
                   </div>
                 </motion.div>
-                
+
                 {/* Lamp Shade */}
                 <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-56 h-20 bg-gradient-to-b from-gray-700 to-gray-600 rounded-t-full border-4 border-gray-500 shadow-xl" />
               </div>
             </div>
-            
+
             {/* Floating Particles */}
             <AnimatePresence>
               {isActive && (
@@ -256,26 +285,29 @@ export function GoGoLamp() {
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0 }}
-                      animate={{ 
-                        opacity: [0, 1, 0], 
+                      animate={{
+                        opacity: [0, 1, 0],
                         scale: [0, 1, 0],
                         x: [0, (i % 2 ? 1 : -1) * 100, 0],
-                        y: [0, -50 - (i * 10), 0]
+                        y: [0, -50 - i * 10, 0],
                       }}
                       exit={{ opacity: 0 }}
-                      transition={{ 
-                        duration: 3, 
+                      transition={{
+                        duration: 3,
                         repeat: Infinity,
                         delay: i * 0.3,
-                        ease: 'easeOut'
+                        ease: "easeOut",
                       }}
                       className={`absolute top-1/2 left-1/2 w-2 h-2 rounded-full ${
-                        i % 3 === 0 ? 'bg-neon-green' : 
-                        i % 3 === 1 ? 'bg-neon-blue' : 'bg-neon-amber'
+                        i % 3 === 0
+                          ? "bg-neon-green"
+                          : i % 3 === 1
+                            ? "bg-neon-blue"
+                            : "bg-neon-amber"
                       }`}
                       style={{
-                        left: `${50 + (i % 3 - 1) * 20}%`,
-                        top: `${50 + (i % 2 ? 10 : -10)}%`
+                        left: `${50 + ((i % 3) - 1) * 20}%`,
+                        top: `${50 + (i % 2 ? 10 : -10)}%`,
                       }}
                     />
                   ))}
@@ -287,16 +319,20 @@ export function GoGoLamp() {
           {/* Status Display */}
           <div className="mb-8">
             <motion.div
-              animate={isActive ? {
-                color: '#00ff41',
-                textShadow: '0 0 20px #00ff41'
-              } : {
-                color: '#9ca3af',
-                textShadow: 'none'
-              }}
+              animate={
+                isActive
+                  ? {
+                      color: "#00ff41",
+                      textShadow: "0 0 20px #00ff41",
+                    }
+                  : {
+                      color: "#9ca3af",
+                      textShadow: "none",
+                    }
+              }
               className="font-orbitron text-2xl mb-4 transition-all duration-500"
             >
-              {isActive ? 'PAYMENT RECEIVED!' : 'WAITING FOR PAYMENT...'}
+              {isActive ? "PAYMENT RECEIVED!" : "WAITING FOR PAYMENT..."}
             </motion.div>
             <AnimatePresence>
               {isActive && (
@@ -314,7 +350,9 @@ export function GoGoLamp() {
 
           {/* Payment History */}
           <div className="bg-card-bg rounded-xl p-6 border border-gray-700 max-w-md mx-auto">
-            <h3 className="font-orbitron font-bold text-lg mb-4 text-neon-blue">Recent Payments</h3>
+            <h3 className="font-orbitron font-bold text-lg mb-4 text-neon-blue">
+              Recent Payments
+            </h3>
             <div className="space-y-3 max-h-40 overflow-y-auto">
               {paymentHistory.length === 0 ? (
                 <div className="text-sm text-gray-500 text-center py-4">
@@ -322,9 +360,16 @@ export function GoGoLamp() {
                 </div>
               ) : (
                 paymentHistory.map((payment) => (
-                  <div key={payment.id} className="flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg">
-                    <span className="text-neon-green font-orbitron">¥{payment.amount.toLocaleString()}</span>
-                    <span className="text-xs text-gray-400">{payment.timestamp}</span>
+                  <div
+                    key={payment.id}
+                    className="flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg"
+                  >
+                    <span className="text-neon-green font-orbitron">
+                      ¥{payment.amount.toLocaleString()}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {payment.timestamp}
+                    </span>
                   </div>
                 ))
               )}
@@ -336,7 +381,9 @@ export function GoGoLamp() {
       {/* Control Panel */}
       <div className="fixed bottom-6 right-6 z-20">
         <div className="bg-card-bg rounded-xl p-4 border border-gray-700 shadow-2xl">
-          <h4 className="font-orbitron font-bold text-sm mb-3 text-neon-amber">Test Controls</h4>
+          <h4 className="font-orbitron font-bold text-sm mb-3 text-neon-amber">
+            Test Controls
+          </h4>
           <div className="space-y-2">
             <button
               onClick={testPayment}
@@ -353,7 +400,8 @@ export function GoGoLamp() {
           </div>
           <div className="mt-3 pt-3 border-t border-gray-600">
             <div className="text-xs text-gray-400">
-              Webhook URL:<br />
+              Webhook URL:
+              <br />
               <code className="text-neon-blue">/api/webhook/payment</code>
             </div>
           </div>
