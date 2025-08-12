@@ -222,14 +222,14 @@ export function GoGoLamp() {
                         }
                   }
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="w-64 h-64 flex items-center justify-center relative"
+                  className="w-96 h-96 flex items-center justify-center relative"
                 >
                   {/* Lamp Image - Off State */}
                   {!isActive && (
                     <motion.img
                       src="/images/lamp-off.png"
                       alt="GOGO! Stripe - Off"
-                      className="w-64 h-64 object-contain"
+                      className="w-96 h-96 object-contain"
                       initial={{ opacity: 1 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -242,7 +242,7 @@ export function GoGoLamp() {
                       <motion.img
                         src="/images/lamp-on.png"
                         alt="GOGO! Stripe - On"
-                        className="w-64 h-64 object-contain absolute inset-0"
+                        className="w-96 h-96 object-contain absolute inset-0"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ 
                           opacity: 1,
