@@ -67,8 +67,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           event = JSON.parse(bodyString);
         }
       } catch (err: any) {
+        console.log("Error parsing webhook body:", JSON.stringify(err));
         console.error(`Webhook processing error:`, {
-          error: JSON.stringify(err.message),
+          error: JSON.stringify(err),
           bodyType: typeof req.body,
           bodyString: req.body ? String(req.body).slice(0, 200) : "no body",
         });
