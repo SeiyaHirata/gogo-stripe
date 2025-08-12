@@ -247,48 +247,8 @@ export function GoGoLamp() {
                   </AnimatePresence>
                 </motion.div>
 
-                {/* Lamp Shade */}
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-56 h-20 bg-gradient-to-b from-gray-700 to-gray-600 rounded-t-full border-4 border-gray-500 shadow-xl" />
               </div>
             </div>
-
-            {/* Floating Particles */}
-            <AnimatePresence>
-              {isActive && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {[...Array(6)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0, 1, 0],
-                        x: [0, (i % 2 ? 1 : -1) * 100, 0],
-                        y: [0, -50 - i * 10, 0],
-                      }}
-                      exit={{ opacity: 0 }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: i * 0.3,
-                        ease: "easeOut",
-                      }}
-                      className={`absolute top-1/2 left-1/2 w-2 h-2 rounded-full ${
-                        i % 3 === 0
-                          ? "bg-neon-green"
-                          : i % 3 === 1
-                            ? "bg-neon-blue"
-                            : "bg-neon-amber"
-                      }`}
-                      style={{
-                        left: `${50 + ((i % 3) - 1) * 20}%`,
-                        top: `${50 + (i % 2 ? 10 : -10)}%`,
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </AnimatePresence>
           </div>
 
           {/* Status Display */}
