@@ -16,7 +16,7 @@ A real-time payment visualization system that lights up when Stripe webhooks are
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Express.js + Socket.IO
-- **Database**: PostgreSQL with Drizzle ORM
+- **Storage**: In-memory storage (easily extensible to PostgreSQL)
 - **UI**: Tailwind CSS + shadcn/ui components
 - **Animations**: Framer Motion
 - **Payment Processing**: Stripe webhooks
@@ -24,7 +24,6 @@ A real-time payment visualization system that lights up when Stripe webhooks are
 ## Prerequisites
 
 - Node.js 18+ and npm
-- PostgreSQL database
 - Stripe account with webhook endpoint configured
 
 ## Environment Variables
@@ -32,9 +31,6 @@ A real-time payment visualization system that lights up when Stripe webhooks are
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/gogolamp
-
 # Stripe Configuration
 STRIPE_SECRET_KEY=sk_test_...                    # Your Stripe secret key
 STRIPE_WEBHOOK_SECRET=whsec_...                  # Webhook endpoint secret
@@ -74,14 +70,7 @@ NODE_ENV=development
    # Edit .env with your configuration
    ```
 
-4. **Set up the database**
-   ```bash
-   # Run database migrations
-   npm run db:generate
-   npm run db:migrate
-   ```
-
-5. **Start the development server**
+4. **Start the development server**
    ```bash
    npm run dev
    ```
@@ -144,12 +133,11 @@ npm run dev
 # Build for production
 npm run build
 
-# Run database migrations
-npm run db:generate
-npm run db:migrate
-
 # Start production server
 npm start
+
+# Type checking
+npm run check
 ```
 
 ## Project Structure
