@@ -93,13 +93,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Broadcast to all connected clients
           io.emit("payment_received", {
             type: "payment_received",
-            amount: paymentIntent.amount / 100, // Convert from cents
+            amount: paymentIntent.amount, // Use amount as-is from Stripe
             currency: paymentIntent.currency,
             timestamp: payment.timestamp,
             paymentId: payment.id,
           });
 
-          console.log(`Payment received: $${paymentIntent.amount / 100}`);
+          console.log(`Payment received: ${paymentIntent.amount} ${paymentIntent.currency}`);
 
           res.json({ received: true });
         } catch (error: any) {

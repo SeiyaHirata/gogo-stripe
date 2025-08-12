@@ -69,7 +69,7 @@ export function GoGoLamp() {
       const response = await fetch("/api/payments");
       const payments = await response.json();
       const history = payments.map((p: any) => ({
-        amount: p.amount,
+        amount: p.amount, // Use amount as-is from server
         timestamp: new Date(p.timestamp).toLocaleTimeString(),
         id: p.id,
       }));
