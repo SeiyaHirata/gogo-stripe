@@ -10,22 +10,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_dummy");
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
-  
+
   // Setup Socket.IO for real-time communication
   const io = new SocketIOServer(httpServer, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"]
-    }
+      methods: ["GET", "POST"],
+    },
   });
 
   // Store active connections
   const activeConnections = new Set();
-  
+
   io.on("connection", (socket) => {
     activeConnections.add(socket);
     console.log("Client connected:", socket.id);
-    
+
     socket.on("disconnect", () => {
       activeConnections.delete(socket);
       console.log("Client disconnected:", socket.id);
@@ -33,92 +33,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe webhook endpoint
-  app.post("/api/webhook/payment", express.raw({type: 'application/json'}), async (req, res) => {
-    console.log('Webhook received:', {
-      headers: req.headers,
-      bodyType: typeof req.body,
-      bodyLength: req.body?.length,
-      bodyConstructor: req.body?.constructor?.name
-    });
-
-    const sig = req.headers['stripe-signature'] as string;
-    let event: Stripe.Event;
-
-    try {
-      if (process.env.STRIPE_WEBHOOK_SECRET && sig) {
-        // Verify webhook signature if secret is provided
-        console.log('Using webhook secret verification');
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-      } else {
-        // For development/testing - parse JSON directly from buffer
-        console.log('Parsing JSON without verification');
-        const rawBody = req.body;
-        const bodyString = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : String(rawBody);
-        console.log('Body string:', bodyString.slice(0, 200) + '...');
-        event = JSON.parse(bodyString);
-      }
-    } catch (err: any) {
-      console.error(`Webhook processing error:`, {
-        error: err.message,
+  app.post(
+    "/api/webhook/payment",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      console.log("Webhook received:", {
+        headers: req.headers,
         bodyType: typeof req.body,
-        bodyString: req.body ? String(req.body).slice(0, 200) : 'no body'
+        bodyLength: req.body?.length,
+        bodyConstructor: req.body?.constructor?.name,
       });
-      return res.status(400).send(`Webhook Error: ${err.message || 'Invalid JSON'}`);
-    }
 
-    // Handle payment success
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      
+      const sig = req.headers["stripe-signature"] as string;
+      let event: Stripe.Event;
+
       try {
-        // Store payment in database
-        const payment = await storage.createPayment({
-          stripePaymentId: paymentIntent.id,
-          amount: paymentIntent.amount,
-          currency: paymentIntent.currency
+        if (process.env.STRIPE_WEBHOOK_SECRET && sig) {
+          // Verify webhook signature if secret is provided
+          console.log("Using webhook secret verification");
+          event = stripe.webhooks.constructEvent(
+            req.body,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRET,
+          );
+        } else {
+          // For development/testing - parse JSON directly from buffer
+          console.log("Parsing JSON without verification");
+          const rawBody = req.body;
+          const bodyString = Buffer.isBuffer(rawBody)
+            ? rawBody.toString("utf8")
+            : String(rawBody);
+          console.log("Body string:", bodyString.slice(0, 200) + "...");
+          event = JSON.parse(bodyString);
+        }
+      } catch (err: any) {
+        console.error(`Webhook processing error:`, {
+          error: JSON.stringify(err.message),
+          bodyType: typeof req.body,
+          bodyString: req.body ? String(req.body).slice(0, 200) : "no body",
         });
-
-        // Broadcast to all connected clients
-        io.emit('payment_received', {
-          type: 'payment_received',
-          amount: paymentIntent.amount / 100, // Convert from cents
-          currency: paymentIntent.currency,
-          timestamp: payment.timestamp,
-          paymentId: payment.id
-        });
-
-        console.log(`Payment received: $${paymentIntent.amount / 100}`);
-        
-        res.json({ received: true });
-      } catch (error: any) {
-        console.error('Error processing payment:', error);
-        res.status(500).json({ error: error.message });
+        return res
+          .status(400)
+          .send(`Webhook Error: ${err.message || "Invalid JSON"}`);
       }
-    } else {
-      console.log(`Unhandled event type: ${event.type}`);
-      res.json({ received: true });
-    }
-  });
+
+      // Handle payment success
+      if (event.type === "payment_intent.succeeded") {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+        try {
+          // Store payment in database
+          const payment = await storage.createPayment({
+            stripePaymentId: paymentIntent.id,
+            amount: paymentIntent.amount,
+            currency: paymentIntent.currency,
+          });
+
+          // Broadcast to all connected clients
+          io.emit("payment_received", {
+            type: "payment_received",
+            amount: paymentIntent.amount / 100, // Convert from cents
+            currency: paymentIntent.currency,
+            timestamp: payment.timestamp,
+            paymentId: payment.id,
+          });
+
+          console.log(`Payment received: $${paymentIntent.amount / 100}`);
+
+          res.json({ received: true });
+        } catch (error: any) {
+          console.error("Error processing payment:", error);
+          res.status(500).json({ error: error.message });
+        }
+      } else {
+        console.log(`Unhandled event type: ${event.type}`);
+        res.json({ received: true });
+      }
+    },
+  );
 
   // Test endpoint to simulate payment
   app.post("/api/test-payment", async (req, res) => {
     try {
       const { amount = 1000 } = req.body;
-      
+
       // Create a test payment
       const payment = await storage.createPayment({
         stripePaymentId: `test_${Date.now()}`,
         amount: amount * 100, // Convert to cents
-        currency: "usd"
+        currency: "usd",
       });
 
       // Broadcast to all connected clients
-      io.emit('payment_received', {
-        type: 'payment_received',
+      io.emit("payment_received", {
+        type: "payment_received",
         amount: amount,
         currency: "usd",
         timestamp: payment.timestamp,
-        paymentId: payment.id
+        paymentId: payment.id,
       });
 
       res.json({ success: true, payment });
