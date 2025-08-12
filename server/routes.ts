@@ -37,45 +37,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/webhook/payment",
     express.raw({ type: "application/json" }),
     async (req, res) => {
-      console.log("Webhook received:", {
-        headers: req.headers,
-        bodyType: typeof req.body,
-        bodyLength: req.body?.length,
-        bodyConstructor: req.body?.constructor?.name,
-      });
-
       const sig = req.headers["stripe-signature"] as string;
       let event: Stripe.Event;
 
       try {
         if (process.env.STRIPE_WEBHOOK_SECRET && sig) {
-          // Verify webhook signature if secret is provided
-          console.log("Using webhook secret verification");
+          console.log("Verifying webhook with signature");
           event = stripe.webhooks.constructEvent(
             req.body,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET,
           );
         } else {
-          // For development/testing - parse JSON directly from buffer
-          console.log("Parsing JSON without verification");
-          const rawBody = req.body;
-          const bodyString = Buffer.isBuffer(rawBody)
-            ? rawBody.toString("utf8")
-            : String(rawBody);
-          console.log("Body string:", bodyString.slice(0, 200) + "...");
+          console.log("Processing webhook without signature verification");
+          const bodyString = req.body.toString("utf8");
           event = JSON.parse(bodyString);
         }
+        console.log("Webhook event received:", event.type);
       } catch (err: any) {
-        console.log("Error parsing webhook body:", JSON.stringify(err));
-        console.error(`Webhook processing error:`, {
-          error: JSON.stringify(err),
-          bodyType: typeof req.body,
-          bodyString: req.body ? String(req.body).slice(0, 200) : "no body",
-        });
-        return res
-          .status(400)
-          .send(`Webhook Error: ${err.message || "Invalid JSON"}`);
+        console.error("Webhook error:", err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
       }
 
       // Handle payment success

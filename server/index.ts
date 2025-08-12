@@ -3,7 +3,17 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(express.json());
+
+// Apply JSON parsing to all routes EXCEPT webhook endpoints
+app.use((req, res, next) => {
+  if (req.path === '/api/webhook/payment') {
+    // Skip JSON parsing for webhook endpoints - they need raw body
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
